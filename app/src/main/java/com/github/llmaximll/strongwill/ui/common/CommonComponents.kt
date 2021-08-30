@@ -9,32 +9,34 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.github.llmaximll.strongwill.model.Timer
-import com.github.llmaximll.strongwill.ui.feature.timer_add.TimerAddContract
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun CurrentTextField(
 	label: String = "",
 	focusManager: FocusManager,
+	isError: Boolean = false,
 	onTextChanged: (String) -> Unit
 ) {
-	var text by remember { mutableStateOf(TextFieldValue()) }
+	var text by rememberSaveable { mutableStateOf("") }
 	OutlinedTextField(
 		modifier = Modifier.fillMaxWidth(),
 		value = text,
 		onValueChange = {
 			text = it
-			onTextChanged(text.text)
+			onTextChanged(text)
 		},
 		label = { Text(label) },
 		singleLine = true,
@@ -46,7 +48,8 @@ fun CurrentTextField(
 			onDone = {
 				focusManager.moveFocus(FocusDirection.Down)
 			}
-		)
+		),
+		isError = isError
 	)
 }
 
@@ -57,13 +60,13 @@ fun DescriptionTextField(
 	focusManager: FocusManager,
 	onTextChanged: (String) -> Unit
 ) {
-	var text by remember { mutableStateOf(TextFieldValue()) }
+	var text by rememberSaveable { mutableStateOf("") }
 	OutlinedTextField(
 		modifier = Modifier.fillMaxWidth(),
 		value = text,
 		onValueChange = {
 			text = it
-			onTextChanged(text.text)
+			onTextChanged(text)
 		},
 		label = { Text(label) },
 		keyboardOptions = KeyboardOptions(

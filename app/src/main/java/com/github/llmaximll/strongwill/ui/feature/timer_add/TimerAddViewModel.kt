@@ -14,6 +14,10 @@ class TimerAddViewModel @Inject constructor(
 ) :
 	BaseViewModel<TimerAddContract.Event, TimerAddContract.State, TimerAddContract.Effect>() {
 
+	init {
+		updateNameTimers()
+	}
+
 	override fun setInitialState(): TimerAddContract.State =
 		TimerAddContract.State()
 
@@ -31,5 +35,16 @@ class TimerAddViewModel @Inject constructor(
 
 	private fun saveTimer(timer: Timer) {
 		viewModelScope.launch { repository.insertTimer(timer) }
+	}
+
+	private fun updateNameTimers() {
+		viewModelScope.launch { getNameTimers() }
+	}
+
+	private suspend fun getNameTimers() {
+		val nameTimers = repository.getNameTimers()
+		setState {
+			copy(nameTimers = nameTimers)
+		}
 	}
 }

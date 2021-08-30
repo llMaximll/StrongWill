@@ -6,7 +6,7 @@ import com.github.llmaximll.strongwill.base.BaseViewModel
 import com.github.llmaximll.strongwill.model.Timer
 import com.github.llmaximll.strongwill.model.data.WillTimersRepository
 import com.github.llmaximll.strongwill.ui.feature.NavigationKeys
-import com.github.llmaximll.strongwill.utils.getProgress2
+import com.github.llmaximll.strongwill.utils.getProgress
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,7 +22,7 @@ class TimerDetailsViewModel @Inject constructor(
 			val timerId: Long = stateHandle.get<Long>(NavigationKeys.Arg.WILL_TIMER_ID)
 				?: throw IllegalStateException("Не найден timerId.")
 			val timer: Timer = repository.getTimer(timerId)
-			setState { copy(timer = timer, difference = getProgress2(date = timer.date)) }
+			setState { copy(timer = timer, progressList = getProgress(post = timer.date)) }
 		}
 	}
 

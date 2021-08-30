@@ -11,7 +11,7 @@ class TimerAddContract {
 		object BackPressed : Event()
 	}
 
-	class State : ViewState
+	data class State(val nameTimers: List<String> = listOf()) : ViewState
 
 	sealed class Effect : ViewSideEffect {
 		sealed class Navigation : Effect() {

@@ -7,6 +7,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.progressSemantics
@@ -17,7 +18,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -29,11 +31,11 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlinx.datetime.DateTimePeriod
 
 @Composable
 fun TimerCircularProgressBar(
@@ -43,7 +45,6 @@ fun TimerCircularProgressBar(
 	backgroundColor: Color = MaterialTheme.colors.background,
 	color: Color = MaterialTheme.colors.primary,
 	strokeWidth: Dp = 15.dp,
-	padding: Dp = 8.dp,
 	onInfoClick: () -> Unit = {  }
 ) {
 	val animateFloat: Float by animateFloatAsState(
@@ -71,13 +72,15 @@ fun TimerCircularProgressBar(
 		}
 
 		Box(
-			modifier = Modifier.padding(padding),
+			modifier = Modifier
+				.padding(8.dp)
+				.size(250.dp),
 			contentAlignment = Alignment.Center
 		) {
 			Canvas(
 				modifier
+					.fillMaxSize()
 					.progressSemantics(progress)
-					.size(250.dp)
 					.shadow(
 						elevation = 8.dp,
 						shape = CircleShape
@@ -95,8 +98,12 @@ fun TimerCircularProgressBar(
 				drawCircularArc(startAngle, sweep, color, stroke)
 			}
 			Text(
-				text = "Timer",
-				style = MaterialTheme.typography.h5
+				modifier = Modifier.padding(24.dp),
+				text = text,
+				maxLines = 2,
+				overflow = TextOverflow.Ellipsis,
+				style = MaterialTheme.typography.h5,
+				textAlign = TextAlign.Center
 			)
 		}
 	}

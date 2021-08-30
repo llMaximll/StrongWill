@@ -27,7 +27,7 @@ import com.github.llmaximll.strongwill.base.LAUNCH_LISTEN_FOR_EFFECTS
 import com.github.llmaximll.strongwill.ui.common.HistoryBar
 import com.github.llmaximll.strongwill.ui.common.TimerCircularProgressBar
 import com.github.llmaximll.strongwill.ui.feature.timer_add.TimerAddContract
-import com.github.llmaximll.strongwill.utils.getProgressList
+import com.github.llmaximll.strongwill.utils.getRanksList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -70,17 +70,16 @@ fun TimerDetailsDestinationScreen(
 				description = state.timer?.description ?: "Unknown"
 			)
 			Spacer(modifier = Modifier.height(8.dp))
-//			TODO("TimerCircularProgressBar")
-			/*TimerCircularProgressBar(
-				difference = state.difference
-			)*/
+			TimerCircularProgressBar(
+				text = getRanksList().getOrElse(state.progressList.indexOfFirst {
+					it > 0f && it < 1f
+				}) { "Cadet" },
+				progress = state.progressList.firstOrNull { it > 0f && it < 1f }
+					?: 1f
+			)
 			Spacer(modifier = Modifier.height(20.dp))
 			HistoryBar(
-				progressList = if (state.difference != null) {
-					getProgressList(state.difference)
-				} else {
-					List(9) { 0f }
-				}
+				progressList = state.progressList
 			)
 		}
 	}

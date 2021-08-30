@@ -1,8 +1,8 @@
 package com.github.llmaximll.strongwill.ui.feature.timer_add
 
+import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -18,6 +18,7 @@ import com.github.llmaximll.strongwill.base.LAUNCH_LISTEN_FOR_EFFECTS
 import com.github.llmaximll.strongwill.model.Timer
 import com.github.llmaximll.strongwill.ui.common.*
 import com.github.llmaximll.strongwill.ui.theme.*
+import com.github.llmaximll.strongwill.utils.Categories
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.onEach
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun TimerAddDestinationScreen(
+	context: Context? = null,
 	state: TimerAddContract.State,
 	effectFlow: Flow<TimerAddContract.Effect>?,
 	onEventSent: (event: TimerAddContract.Event) -> Unit,
@@ -46,8 +48,11 @@ fun TimerAddDestinationScreen(
 
 	var nameTimer by rememberSaveable { mutableStateOf("") }
 	var descriptionTimer by rememberSaveable { mutableStateOf("") }
-	var categoryTimer by rememberSaveable { mutableStateOf("") }
+	var categoryTimer by rememberSaveable { mutableStateOf(Categories.Fun) }
 	var colorTimer by rememberSaveable { mutableStateOf(0) }
+
+	var isErrorName by rememberSaveable { mutableStateOf(false) }
+	var error by rememberSaveable { mutableStateOf("Name") }
 
 	val scaffoldState: ScaffoldState = rememberScaffoldState()
 	Scaffold(
@@ -67,8 +72,9 @@ fun TimerAddDestinationScreen(
 		) {
 
 			CurrentTextField(
-				"Name",
-				focusManager
+				error,
+				focusManager,
+				isError = isErrorName
 			) { text ->
 				nameTimer = text
 			}
@@ -101,14 +107,19 @@ fun TimerAddDestinationScreen(
 			CurrentButton(
 				text = "Save"
 			) {
-				onEventSent(TimerAddContract.Event.SaveTimer(
-					Timer(
-						name = nameTimer,
-						description = descriptionTimer,
-						category = categoryTimer,
-						color = colorTimer
-					)
-				))
+				if (nameTimer !in state.nameTimers) {
+					onEventSent(TimerAddContract.Event.SaveTimer(
+						Timer(
+							name = nameTimer,
+							description = descriptionTimer,
+							category = categoryTimer,
+							color = colorTimer
+						)
+					))
+				} else {
+					isErrorName = true
+					error = "A timer with this name already exists"
+				}
 			}
 		}
 	}
@@ -141,6 +152,7 @@ fun CreatingAppBar(
 @Composable
 fun TimerAddDestinationScreenPreview() {
 	TimerAddDestinationScreen(
+		context = null,
 		TimerAddContract.State(),
 		effectFlow = null,
 		onEventSent = {  }

@@ -14,7 +14,7 @@ class TimerDetailsContract {
 
 	data class State(
 		val timer: Timer?,
-		val difference: DateTimePeriod? = null
+		val progressList: List<Float> = List(9) { 0f }
 	) : ViewState
 
 	sealed class Effect : ViewSideEffect {

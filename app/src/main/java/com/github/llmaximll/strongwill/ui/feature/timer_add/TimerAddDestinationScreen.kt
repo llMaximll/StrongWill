@@ -6,7 +6,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -17,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.github.llmaximll.strongwill.base.LAUNCH_LISTEN_FOR_EFFECTS
 import com.github.llmaximll.strongwill.model.Timer
 import com.github.llmaximll.strongwill.ui.common.*
+import com.github.llmaximll.strongwill.ui.feature.timers.TimersContract
 import com.github.llmaximll.strongwill.ui.theme.*
 import com.github.llmaximll.strongwill.utils.Categories
 import kotlinx.coroutines.flow.Flow
@@ -70,7 +73,6 @@ fun TimerAddDestinationScreen(
 				.padding(start = 16.dp, end = 16.dp)
 				.verticalScroll(state = scrollState)
 		) {
-
 			CurrentTextField(
 				error,
 				focusManager,

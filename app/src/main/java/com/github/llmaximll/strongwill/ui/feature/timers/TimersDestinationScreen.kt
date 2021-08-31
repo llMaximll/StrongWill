@@ -1,5 +1,9 @@
 package com.github.llmaximll.strongwill.ui.feature.timers
 
+import android.annotation.SuppressLint
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,10 +16,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -26,7 +32,6 @@ import com.github.llmaximll.strongwill.base.LAUNCH_LISTEN_FOR_EFFECTS
 import com.github.llmaximll.strongwill.model.Timer
 import com.github.llmaximll.strongwill.utils.categoryToIconRes
 import com.github.llmaximll.strongwill.utils.getCategoryColors
-import com.github.llmaximll.strongwill.utils.getCategoryIcons
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -104,17 +109,16 @@ fun TimerItemRow(
 	onItemClicked: (id: Long) -> Unit = {  }
 ) {
 	Card(
-		modifier = Modifier
-			.fillMaxWidth()
-			.padding(start = 12.dp, end = 12.dp, top = 12.dp)
-			.clickable { onItemClicked(item.id) },
+		modifier = Modifier.animatedRowModifier(
+			onItemClicked = onItemClicked,
+			item = item
+		),
 		backgroundColor = getCategoryColors()[item.color],
 		shape = RoundedCornerShape(8.dp),
 		elevation = 3.dp,
 	) {
 		Row(
-			modifier = Modifier
-				.fillMaxWidth(),
+			modifier = Modifier.fillMaxWidth(),
 			verticalAlignment = Alignment.CenterVertically
 		) {
 			Image(
@@ -136,6 +140,26 @@ fun TimerItemRow(
 			)
 		}
 	}
+}
+
+@SuppressLint("UnnecessaryComposedModifier")
+private fun Modifier.animatedRowModifier(
+	onItemClicked: (id: Long) -> Unit,
+	item: Timer
+): Modifier = composed {
+	val animatedProgress = remember { Animatable(0.8f) }
+	LaunchedEffect(Unit) {
+		animatedProgress.animateTo(
+			targetValue = 1.0f,
+			animationSpec = tween(300, easing = LinearEasing)
+		)
+	}
+
+	this
+		.fillMaxWidth()
+		.padding(start = 12.dp, end = 12.dp, top = 12.dp)
+		.clickable { onItemClicked(item.id) }
+		.graphicsLayer(scaleY = animatedProgress.value, scaleX = animatedProgress.value)
 }
 
 @Composable

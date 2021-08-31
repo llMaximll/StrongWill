@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -104,6 +105,19 @@ private fun DetailsAppBar(
 			}
 		},
 		title = { Text("Details") },
+		actions = {
+			IconButton(
+				onClick = {
+
+				}
+			) {
+				Icon(
+					imageVector = Icons.Default.Edit,
+					modifier = Modifier.padding(horizontal = 12.dp),
+					contentDescription = null
+				)
+			}
+		},
 		backgroundColor = MaterialTheme.colors.background
 	)
 }

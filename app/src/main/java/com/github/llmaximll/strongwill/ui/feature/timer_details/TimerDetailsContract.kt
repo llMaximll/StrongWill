@@ -4,8 +4,6 @@ import com.github.llmaximll.strongwill.base.ViewEvent
 import com.github.llmaximll.strongwill.base.ViewSideEffect
 import com.github.llmaximll.strongwill.base.ViewState
 import com.github.llmaximll.strongwill.model.Timer
-import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.DateTimePeriod
 
 class TimerDetailsContract {
 	sealed class Event : ViewEvent {

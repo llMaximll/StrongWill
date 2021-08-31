@@ -57,55 +57,39 @@ fun TimerCircularProgressBar(
 	}
 
 	Box(
+		modifier = Modifier
+			.padding(8.dp)
+			.size(250.dp),
 		contentAlignment = Alignment.Center
 	) {
-		IconButton(
-			modifier = Modifier.align(Alignment.TopEnd),
-			onClick = { onInfoClick() }
+		Canvas(
+			modifier
+				.fillMaxSize()
+				.progressSemantics(progress)
+				.shadow(
+					elevation = 8.dp,
+					shape = CircleShape
+				)
+				.border(
+					width = 2.dp,
+					color = color.copy(alpha = 0.3f),
+					shape = CircleShape
+				)
+				.focusable()
 		) {
-			Icon(
-				modifier = Modifier.size(30.dp),
-				painter = rememberVectorPainter(image = Icons.Default.Info),
-				contentDescription = null,
-				tint = color.copy(alpha = 0.5f)
-			)
+			drawCircleBackground(backgroundColor)
+			val startAngle = 270f
+			val sweep = animateFloat * 360f
+			drawCircularArc(startAngle, sweep, color, stroke)
 		}
-
-		Box(
-			modifier = Modifier
-				.padding(8.dp)
-				.size(250.dp),
-			contentAlignment = Alignment.Center
-		) {
-			Canvas(
-				modifier
-					.fillMaxSize()
-					.progressSemantics(progress)
-					.shadow(
-						elevation = 8.dp,
-						shape = CircleShape
-					)
-					.border(
-						width = 2.dp,
-						color = color.copy(alpha = 0.3f),
-						shape = CircleShape
-					)
-					.focusable()
-			) {
-				drawCircleBackground(backgroundColor)
-				val startAngle = 270f
-				val sweep = animateFloat * 360f
-				drawCircularArc(startAngle, sweep, color, stroke)
-			}
-			Text(
-				modifier = Modifier.padding(24.dp),
-				text = text,
-				maxLines = 2,
-				overflow = TextOverflow.Ellipsis,
-				style = MaterialTheme.typography.h5,
-				textAlign = TextAlign.Center
-			)
-		}
+		Text(
+			modifier = Modifier.padding(24.dp),
+			text = text,
+			maxLines = 2,
+			overflow = TextOverflow.Ellipsis,
+			style = MaterialTheme.typography.h5,
+			textAlign = TextAlign.Center
+		)
 	}
 }
 

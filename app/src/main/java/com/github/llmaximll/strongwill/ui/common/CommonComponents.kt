@@ -10,13 +10,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.text.input.ImeAction
@@ -27,17 +22,16 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalComposeUiApi::class)
 fun CurrentTextField(
 	label: String = "",
+	text: String = "",
 	focusManager: FocusManager,
 	isError: Boolean = false,
 	onTextChanged: (String) -> Unit
 ) {
-	var text by rememberSaveable { mutableStateOf("") }
 	OutlinedTextField(
 		modifier = Modifier.fillMaxWidth(),
 		value = text,
 		onValueChange = {
-			text = it
-			onTextChanged(text)
+			onTextChanged(it)
 		},
 		label = { Text(label) },
 		singleLine = true,
@@ -59,16 +53,15 @@ fun CurrentTextField(
 @OptIn(ExperimentalComposeUiApi::class)
 fun DescriptionTextField(
 	label: String = "",
+	text: String = "",
 	focusManager: FocusManager,
 	onTextChanged: (String) -> Unit
 ) {
-	var text by rememberSaveable { mutableStateOf("") }
 	OutlinedTextField(
 		modifier = Modifier.fillMaxWidth(),
 		value = text,
 		onValueChange = {
-			text = it
-			onTextChanged(text)
+			onTextChanged(it)
 		},
 		label = { Text(label) },
 		keyboardOptions = KeyboardOptions(

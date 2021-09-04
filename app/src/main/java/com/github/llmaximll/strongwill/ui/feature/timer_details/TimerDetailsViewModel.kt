@@ -17,14 +17,8 @@ class TimerDetailsViewModel @Inject constructor(
 	private val repository: WillTimersRepository
 ) : BaseViewModel<TimerDetailsContract.Event, TimerDetailsContract.State, TimerDetailsContract.Effect>() {
 
-	init {
-		viewModelScope.launch {
-			val timerId: Long = stateHandle.get<Long>(NavigationKeys.Arg.WILL_TIMER_ID)
-				?: throw IllegalStateException("Не найден timerId.")
-			val timer: Timer = repository.getTimer(timerId)
-			setState { copy(timer = timer, progressList = getProgress(post = timer.date)) }
-		}
-	}
+	val timerId: Long = stateHandle.get<Long>(NavigationKeys.Arg.WILL_TIMER_ID)
+		?: throw IllegalStateException("Не найден timerId.")
 
 	override fun setInitialState(): TimerDetailsContract.State =
 		TimerDetailsContract.State(
@@ -35,6 +29,15 @@ class TimerDetailsViewModel @Inject constructor(
 		when (event) {
 			is TimerDetailsContract.Event.BackPressed -> {
 				setEffect { TimerDetailsContract.Effect.Navigation.ToTimers }
+			}
+			is TimerDetailsContract.Event.ToTimerEdit -> {
+				setEffect { TimerDetailsContract.Effect.Navigation.ToTimerEdit(event.timerId) }
+			}
+			is TimerDetailsContract.Event.RefreshData -> {
+				viewModelScope.launch {
+					val timer: Timer = repository.getTimer(timerId)
+					setState { copy(timer = timer, progressList = getProgress(post = timer.date)) }
+				}
 			}
 		}
 	}

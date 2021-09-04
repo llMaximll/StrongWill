@@ -1,14 +1,11 @@
 package com.github.llmaximll.strongwill.ui.feature.timer_add
 
-import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -19,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import com.github.llmaximll.strongwill.base.LAUNCH_LISTEN_FOR_EFFECTS
 import com.github.llmaximll.strongwill.model.Timer
 import com.github.llmaximll.strongwill.ui.common.*
-import com.github.llmaximll.strongwill.ui.feature.timers.TimersContract
 import com.github.llmaximll.strongwill.ui.theme.*
 import com.github.llmaximll.strongwill.utils.Categories
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +25,6 @@ import kotlinx.coroutines.flow.onEach
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun TimerAddDestinationScreen(
-	context: Context? = null,
 	state: TimerAddContract.State,
 	effectFlow: Flow<TimerAddContract.Effect>?,
 	onEventSent: (event: TimerAddContract.Event) -> Unit,
@@ -75,6 +70,7 @@ fun TimerAddDestinationScreen(
 		) {
 			CurrentTextField(
 				error,
+				text = nameTimer,
 				focusManager,
 				isError = isErrorName
 			) { text ->
@@ -83,6 +79,7 @@ fun TimerAddDestinationScreen(
 			Spacer(modifier = Modifier.height(8.dp))
 			DescriptionTextField(
 				"Description",
+				text = descriptionTimer,
 				focusManager
 			) { text ->
 				descriptionTimer = text
@@ -154,7 +151,6 @@ fun CreatingAppBar(
 @Composable
 fun TimerAddDestinationScreenPreview() {
 	TimerAddDestinationScreen(
-		context = null,
 		TimerAddContract.State(),
 		effectFlow = null,
 		onEventSent = {  }

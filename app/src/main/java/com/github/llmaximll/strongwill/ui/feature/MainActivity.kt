@@ -15,12 +15,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.navArgument
 import com.github.llmaximll.strongwill.ui.feature.NavigationKeys.Arg.WILL_TIMER_ID
+import com.github.llmaximll.strongwill.ui.feature.NavigationKeys.Route.WILL_TIMER_ADD
 import com.github.llmaximll.strongwill.ui.feature.NavigationKeys.Route.WILL_TIMER_DETAILS
 import com.github.llmaximll.strongwill.ui.feature.NavigationKeys.Route.WILL_TIMER_LIST
 import com.github.llmaximll.strongwill.ui.feature.timer_add.TimerAddDestinationScreen
 import com.github.llmaximll.strongwill.ui.feature.timer_add.TimerAddViewModel
+import com.github.llmaximll.strongwill.ui.feature.timer_details.TimerDetailsContract
 import com.github.llmaximll.strongwill.ui.feature.timer_details.TimerDetailsDestinationScreen
 import com.github.llmaximll.strongwill.ui.feature.timer_details.TimerDetailsViewModel
+import com.github.llmaximll.strongwill.ui.feature.timer_edit.TimerEditContract
+import com.github.llmaximll.strongwill.ui.feature.timer_edit.TimerEditDestinationScreen
+import com.github.llmaximll.strongwill.ui.feature.timer_edit.TimerEditViewModel
 import com.github.llmaximll.strongwill.ui.feature.timers.TimersContract
 import com.github.llmaximll.strongwill.ui.feature.timers.TimersDestinationScreen
 import com.github.llmaximll.strongwill.ui.feature.timers.TimersViewModel
@@ -29,6 +34,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -63,8 +69,16 @@ fun WillApp() {
         ) {
             TimerDetailsDestination(navController)
         }
-        composable(route = NavigationKeys.Route.WILL_TIMER_ADD) {
+        composable(route = WILL_TIMER_ADD) {
             TimerAddDestination(navController = navController)
+        }
+        composable(
+            route = NavigationKeys.Route.WILL_TIMER_EDIT,
+            arguments = listOf(navArgument(WILL_TIMER_ID) {
+                type = NavType.LongType
+            })
+        ) {
+            TimerEditDestination(navController = navController)
         }
     }
 }
@@ -83,7 +97,7 @@ private fun TimersDestination(navController: NavHostController) {
                 navController.navigate("$WILL_TIMER_LIST/${navigationEffect.timerId}")
             }
             if (navigationEffect is TimersContract.Effect.Navigation.ToTimerAdd) {
-                navController.navigate(NavigationKeys.Route.WILL_TIMER_ADD)
+                navController.navigate(WILL_TIMER_ADD)
             }
         }
     )
@@ -97,7 +111,9 @@ private fun TimerAddDestination(navController: NavHostController) {
         state = state,
         effectFlow = viewModel.effect,
         onEventSent = { event -> viewModel.setEvent(event) },
-        onNavigationRequested = { navController.popBackStack() }
+        onNavigationRequested = {
+            navController.popBackStack()
+        }
     )
 }
 
@@ -109,7 +125,32 @@ private fun TimerDetailsDestination(navController: NavHostController) {
         state = state,
         effectFlow = viewModel.effect,
         onEventSent = { event -> viewModel.setEvent(event) },
-        onNavigationRequested = { navController.popBackStack() }
+        onNavigationRequested = { navigationEffect ->
+            if (navigationEffect is TimerDetailsContract.Effect.Navigation.ToTimerEdit) {
+                navController.navigate("$WILL_TIMER_ADD/${navigationEffect.timerId}")
+            }
+            if (navigationEffect is TimerDetailsContract.Effect.Navigation.ToTimers) {
+                navController.popBackStack()
+            }
+        }
+    )
+}
+
+@Composable
+private fun TimerEditDestination(navController: NavHostController) {
+    val viewModel: TimerEditViewModel = hiltViewModel()
+    val state = viewModel.viewState.value
+    TimerEditDestinationScreen(
+        state = state,
+        effectFlow = viewModel.effect,
+        onEventSent = { event ->
+            viewModel.setEvent(event)
+        },
+        onNavigationRequested = { navigationEffect ->
+            when (navigationEffect) {
+                is TimerEditContract.Effect.Navigation.ToTimers -> navController.popBackStack()
+            }
+        }
     )
 }
 
@@ -122,6 +163,7 @@ object NavigationKeys {
         const val WILL_TIMER_LIST = "will_timer_list"
         const val WILL_TIMER_DETAILS = "$WILL_TIMER_LIST/{$WILL_TIMER_ID}"
         const val WILL_TIMER_ADD = "will_timer_add"
+        const val WILL_TIMER_EDIT = "$WILL_TIMER_ADD/{$WILL_TIMER_ID}"
     }
 }
 

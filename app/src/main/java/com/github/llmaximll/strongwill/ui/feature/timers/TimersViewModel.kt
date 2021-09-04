@@ -17,6 +17,7 @@ class TimersViewModel @Inject constructor(private val repository: WillTimersRepo
 		viewModelScope.launch { getTimers() }
 	}
 
+
 	override fun setInitialState(): TimersContract.State =
 		TimersContract.State(timers = listOf(), isLoading = true)
 

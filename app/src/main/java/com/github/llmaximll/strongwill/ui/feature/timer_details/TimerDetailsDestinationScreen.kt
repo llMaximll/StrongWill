@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import com.github.llmaximll.strongwill.base.LAUNCH_LISTEN_FOR_EFFECTS
 import com.github.llmaximll.strongwill.ui.common.HistoryBar
 import com.github.llmaximll.strongwill.ui.common.TimerCircularProgressBar
-import com.github.llmaximll.strongwill.ui.feature.timer_add.TimerAddContract
 import com.github.llmaximll.strongwill.utils.getRanksList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -41,9 +40,14 @@ fun TimerDetailsDestinationScreen(
 	onNavigationRequested: (navigationEffect: TimerDetailsContract.Effect.Navigation) -> Unit
 ) {
 	LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
+		onEventSent(TimerDetailsContract.Event.RefreshData)
+
 		effectFlow?.onEach { effect ->
 			when (effect) {
 				is TimerDetailsContract.Effect.Navigation.ToTimers -> onNavigationRequested(
+					effect
+				)
+				is TimerDetailsContract.Effect.Navigation.ToTimerEdit -> onNavigationRequested(
 					effect
 				)
 			}
@@ -53,10 +57,18 @@ fun TimerDetailsDestinationScreen(
 	val scaffoldState = rememberScaffoldState()
 	val scrollState = rememberScrollState()
 	Scaffold(
-		modifier = Modifier
-			.fillMaxSize(),
+		modifier = Modifier.fillMaxSize(),
 		scaffoldState = scaffoldState,
-		topBar = { DetailsAppBar(onEventSent = { onEventSent(TimerDetailsContract.Event.BackPressed) }) }
+		topBar = { DetailsAppBar(timerId = state.timer?.id, onEventSent = { event ->
+			when (event) {
+				is TimerDetailsContract.Event.BackPressed -> {
+					onEventSent(TimerDetailsContract.Event.BackPressed)
+				}
+				is TimerDetailsContract.Event.ToTimerEdit -> {
+					onEventSent(TimerDetailsContract.Event.ToTimerEdit(event.timerId))
+				}
+			}
+		}) }
 	) {
 		Column(
 			modifier = Modifier
@@ -88,13 +100,14 @@ fun TimerDetailsDestinationScreen(
 
 @Composable
 private fun DetailsAppBar(
-	onEventSent: (event: TimerAddContract.Event) -> Unit
+	onEventSent: (event: TimerDetailsContract.Event) -> Unit,
+	timerId: Long?
 ) {
 	TopAppBar(
 		navigationIcon = {
 			IconButton(
 				onClick = {
-					onEventSent(TimerAddContract.Event.BackPressed)
+					onEventSent(TimerDetailsContract.Event.BackPressed)
 				}
 			) {
 				Icon(
@@ -107,9 +120,7 @@ private fun DetailsAppBar(
 		title = { Text("Details") },
 		actions = {
 			IconButton(
-				onClick = {
-
-				}
+				onClick = { onEventSent(TimerDetailsContract.Event.ToTimerEdit(timerId = timerId ?: 0L)) }
 			) {
 				Icon(
 					imageVector = Icons.Default.Edit,

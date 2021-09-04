@@ -8,6 +8,8 @@ import com.github.llmaximll.strongwill.model.Timer
 class TimerDetailsContract {
 	sealed class Event : ViewEvent {
 		object BackPressed : Event()
+		data class ToTimerEdit(val timerId: Long) : Event()
+		object RefreshData : Event()
 	}
 
 	data class State(
@@ -18,6 +20,7 @@ class TimerDetailsContract {
 	sealed class Effect : ViewSideEffect {
 		sealed class Navigation : Effect() {
 			object ToTimers : Navigation()
+			data class ToTimerEdit(val timerId: Long) : Navigation()
 		}
 	}
 }

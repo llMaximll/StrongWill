@@ -1,9 +1,6 @@
 package com.github.llmaximll.strongwill.model.local
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.github.llmaximll.strongwill.model.Timer
 
 @Dao
@@ -20,4 +17,7 @@ interface WillDao {
 
 	@Insert(onConflict = OnConflictStrategy.REPLACE)
 	suspend fun insertTimer(timer: Timer)
+
+	@Update(onConflict = OnConflictStrategy.REPLACE)
+	suspend fun updateTimer(timer: Timer)
 }

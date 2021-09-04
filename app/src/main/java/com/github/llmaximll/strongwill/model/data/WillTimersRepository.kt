@@ -17,4 +17,6 @@ class WillTimersRepository @Inject constructor(
 	suspend fun getNameTimers(): List<String> = willDao.getNameTimers()
 
 	suspend fun insertTimer(timer: Timer) = willDao.insertTimer(timer)
+
+	suspend fun updateTimer(timer: Timer) = willDao.updateTimer(timer)
 }

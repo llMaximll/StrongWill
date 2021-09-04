@@ -11,8 +11,8 @@ import kotlin.random.Random
 data class Timer(
 	@PrimaryKey(autoGenerate = true)
 	val id: Long = Random.nextLong(),
-	val name: String = "Name",
-	val description: String = "Description",
+	val name: String = "",
+	val description: String = "",
 	val category: String = Categories.Fun,
 	@ColorRes val color:  Int = 0,
 	val date: Long = Date().time,

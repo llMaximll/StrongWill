@@ -1,19 +1,19 @@
 package com.github.llmaximll.strongwill.ui.common
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -93,5 +93,42 @@ fun CurrentButton(
 			text = text,
 			style = MaterialTheme.typography.h6
 		)
+	}
+}
+
+@Composable
+fun RowScope.DialogButton(
+	text: String,
+	onEventSent: () -> Unit = {  },
+	cancelButton: Boolean = false
+) {
+	if (!cancelButton) {
+		Button(
+			modifier = Modifier
+				.fillMaxWidth()
+				.padding(8.dp)
+				.weight(0.5f),
+			onClick = { onEventSent() },
+			shape = RoundedCornerShape(10.dp)
+		) {
+			Text(
+				text = text,
+				style = MaterialTheme.typography.h6
+			)
+		}
+	} else {
+		TextButton(
+			modifier = Modifier
+				.fillMaxWidth()
+				.padding(8.dp)
+				.weight(0.5f),
+			onClick = { onEventSent() },
+			shape = RoundedCornerShape(10.dp)
+		) {
+			Text(
+				text = text,
+				style = MaterialTheme.typography.h6
+			)
+		}
 	}
 }

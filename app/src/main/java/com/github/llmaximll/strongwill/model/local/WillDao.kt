@@ -20,4 +20,7 @@ interface WillDao {
 
 	@Update(onConflict = OnConflictStrategy.REPLACE)
 	suspend fun updateTimer(timer: Timer)
+
+	@Delete
+	suspend fun deleteTimer(timer: Timer): Int
 }

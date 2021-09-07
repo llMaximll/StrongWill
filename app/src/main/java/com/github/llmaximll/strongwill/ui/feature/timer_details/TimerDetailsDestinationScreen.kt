@@ -2,16 +2,14 @@ package com.github.llmaximll.strongwill.ui.feature.timer_details
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -21,10 +19,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.github.llmaximll.strongwill.R
 import com.github.llmaximll.strongwill.base.LAUNCH_LISTEN_FOR_EFFECTS
+import com.github.llmaximll.strongwill.model.Timer
+import com.github.llmaximll.strongwill.ui.common.DialogButton
 import com.github.llmaximll.strongwill.ui.common.HistoryBar
 import com.github.llmaximll.strongwill.ui.common.TimerCircularProgressBar
 import com.github.llmaximll.strongwill.utils.getRanksList
@@ -53,23 +55,38 @@ fun TimerDetailsDestinationScreen(
 			}
 		}?.collect()
 	}
+	var showDialog by rememberSaveable { mutableStateOf(false) }
 
 	val scaffoldState = rememberScaffoldState()
 	val scrollState = rememberScrollState()
 	Scaffold(
 		modifier = Modifier.fillMaxSize(),
 		scaffoldState = scaffoldState,
-		topBar = { DetailsAppBar(timerId = state.timer?.id, onEventSent = { event ->
-			when (event) {
-				is TimerDetailsContract.Event.BackPressed -> {
-					onEventSent(TimerDetailsContract.Event.BackPressed)
-				}
-				is TimerDetailsContract.Event.ToTimerEdit -> {
-					onEventSent(TimerDetailsContract.Event.ToTimerEdit(event.timerId))
-				}
-			}
-		}) }
+		topBar = {
+			DetailsAppBar(
+				timerId = state.timer?.id,
+				onEventSent = { event ->
+					when (event) {
+						is TimerDetailsContract.Event.BackPressed -> {
+							onEventSent(TimerDetailsContract.Event.BackPressed)
+						}
+						is TimerDetailsContract.Event.ToTimerEdit -> {
+							onEventSent(TimerDetailsContract.Event.ToTimerEdit(event.timerId))
+						}
+					}
+				},
+				onDeleteButtonClicked = { showDialog = true }
+			)
+		}
 	) {
+		DialogComponent(
+			onSuccess = {
+				showDialog = false
+				onEventSent(TimerDetailsContract.Event.DeleteTimer(state.timer ?: Timer()))
+			},
+			onDismiss = { showDialog = false },
+			showDialog = showDialog
+		)
 		Column(
 			modifier = Modifier
 				.fillMaxSize()
@@ -101,7 +118,8 @@ fun TimerDetailsDestinationScreen(
 @Composable
 private fun DetailsAppBar(
 	onEventSent: (event: TimerDetailsContract.Event) -> Unit,
-	timerId: Long?
+	timerId: Long?,
+	onDeleteButtonClicked: () -> Unit = {  }
 ) {
 	TopAppBar(
 		navigationIcon = {
@@ -124,6 +142,15 @@ private fun DetailsAppBar(
 			) {
 				Icon(
 					imageVector = Icons.Default.Edit,
+					modifier = Modifier.padding(horizontal = 12.dp),
+					contentDescription = null
+				)
+			}
+			IconButton(
+				onClick = { onDeleteButtonClicked() }
+			) {
+				Icon(
+					imageVector = Icons.Default.Delete,
 					modifier = Modifier.padding(horizontal = 12.dp),
 					contentDescription = null
 				)
@@ -193,6 +220,59 @@ private fun DescriptionBoxExpanded(
 		text = description,
 		style = MaterialTheme.typography.body1,
 	)
+}
+
+@Composable
+private fun DialogComponent(
+	onSuccess: () -> Unit = {  },
+	onDismiss: () -> Unit = {  },
+	showDialog: Boolean = false
+) {
+	if (showDialog) {
+		AlertDialog(
+			onDismissRequest = onDismiss,
+			title = { Text(
+				text = "Delete timer?",
+				style = MaterialTheme.typography.h6
+			) },
+			text = { Text(
+				text = "It is impossible to restore",
+				style = MaterialTheme.typography.body1
+			) },
+			buttons = {
+				val scrollState = rememberScrollState()
+
+				Column(
+					modifier = Modifier
+						.fillMaxWidth()
+						.verticalScroll(state = scrollState, enabled = true),
+					horizontalAlignment = Alignment.CenterHorizontally
+				) {
+					Image(
+						painter = painterResource(id = R.drawable.recycle_bin),
+						contentDescription = null
+					)
+					Row(
+						modifier = Modifier
+							.fillMaxWidth()
+							.padding(8.dp),
+						horizontalArrangement = Arrangement.SpaceAround
+					) {
+						DialogButton(
+							text = "Cancel",
+							onEventSent = onDismiss,
+							cancelButton = true
+						)
+						DialogButton(
+							text = "Delete",
+							onEventSent = onSuccess
+						)
+					}
+				}
+			},
+			shape = RoundedCornerShape(16.dp)
+		)
+	}
 }
 
 @Preview

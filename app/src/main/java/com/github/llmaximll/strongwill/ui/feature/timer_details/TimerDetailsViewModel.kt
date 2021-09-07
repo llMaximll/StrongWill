@@ -21,9 +21,7 @@ class TimerDetailsViewModel @Inject constructor(
 		?: throw IllegalStateException("Не найден timerId.")
 
 	override fun setInitialState(): TimerDetailsContract.State =
-		TimerDetailsContract.State(
-			timer = Timer()
-		)
+		TimerDetailsContract.State(timer = Timer())
 
 	override fun handleEvents(event: TimerDetailsContract.Event) {
 		when (event) {
@@ -39,6 +37,15 @@ class TimerDetailsViewModel @Inject constructor(
 					setState { copy(timer = timer, progressList = getProgress(post = timer.date)) }
 				}
 			}
+			is TimerDetailsContract.Event.DeleteTimer -> {
+				viewModelScope.launch {
+					deleteTimer(event.timer)
+					setEffect { TimerDetailsContract.Effect.Navigation.ToTimers }
+				}
+			}
 		}
 	}
+
+	private suspend fun deleteTimer(timer: Timer): Int =
+		repository.deleteTimer(timer)
 }

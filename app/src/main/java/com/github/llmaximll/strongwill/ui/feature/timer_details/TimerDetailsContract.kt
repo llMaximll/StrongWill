@@ -10,6 +10,7 @@ class TimerDetailsContract {
 		object BackPressed : Event()
 		data class ToTimerEdit(val timerId: Long) : Event()
 		object RefreshData : Event()
+		data class DeleteTimer(val timer: Timer) : Event()
 	}
 
 	data class State(

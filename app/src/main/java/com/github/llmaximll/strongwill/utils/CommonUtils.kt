@@ -88,3 +88,8 @@ fun getRanksList(): List<String> =
 		Ranks.R13_ViceAdmiral,
 		Ranks.R14_Admiral,
 	)
+
+fun getTimeRanks(): List<String> =
+	listOf(
+		"1 hour", "1 day", "3 days", "1 week", "2 week", "1 month", "3 months", "6 months", "1 year"
+	)

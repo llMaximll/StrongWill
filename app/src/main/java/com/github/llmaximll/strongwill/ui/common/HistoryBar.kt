@@ -1,5 +1,6 @@
 package com.github.llmaximll.strongwill.ui.common
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -9,10 +10,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -25,21 +27,38 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.github.llmaximll.strongwill.utils.getRankIcons
 import com.github.llmaximll.strongwill.utils.getRanksList
+import com.github.llmaximll.strongwill.utils.getTimeRanks
 
 @Composable
 fun HistoryBar(
 	progressList: List<Float>
 ) {
+	var expanded by rememberSaveable { mutableStateOf(false) }
+
 	Column(
 		modifier = Modifier
 			.fillMaxWidth()
 			.padding(bottom = 8.dp)
 	) {
-		Text(
-			modifier = Modifier.padding(start = 16.dp),
-			text = "Ranks",
-			style = MaterialTheme.typography.h6
-		)
+		Row(
+			verticalAlignment = Alignment.CenterVertically
+		) {
+			Text(
+				modifier = Modifier.padding(start = 16.dp),
+				text = "Ranks",
+				style = MaterialTheme.typography.h6
+			)
+			IconButton(
+				onClick = {
+					expanded = !expanded
+				}
+			) {
+				Icon(
+					imageVector = Icons.Default.Info,
+					contentDescription = null
+				)
+			}
+		}
 		Spacer(modifier = Modifier.padding(vertical = 6.dp))
 		Column(
 			modifier = Modifier
@@ -57,7 +76,8 @@ fun HistoryBar(
 				if (progressList[i] != 0f) {
 					HistoryBarRow(
 						count = i,
-						progress = progressList[i]
+						progress = progressList[i],
+						expanded = expanded
 					)
 				}
 			}
@@ -71,7 +91,8 @@ fun HistoryBar(
 @Composable
 private fun HistoryBarRow(
 	count: Int,
-	progress: Float
+	progress: Float,
+	expanded: Boolean = false
 ) {
 	val animatedAlphaText = remember { Animatable(0f) }
 	val animatedProgress = remember { Animatable(0f) }
@@ -89,11 +110,14 @@ private fun HistoryBarRow(
 	Row(
 		modifier = Modifier
 			.fillMaxWidth()
-			.padding(16.dp),
+			.padding(16.dp)
+			.animateContentSize(),
 		horizontalArrangement = Arrangement.Center
 	) {
 		Image(
-			modifier = Modifier.weight(weight = 0.1f),
+			modifier = Modifier
+				.weight(weight = 0.1f)
+				.align(Alignment.CenterVertically),
 			painter = painterResource(id = getRankIcons()[count]),
 			contentDescription = null
 		)
@@ -132,6 +156,17 @@ private fun HistoryBarRow(
 					.padding(top = 8.dp),
 				progress = animatedProgress.value
 			)
+			if (expanded) {
+				Text(
+					modifier = Modifier
+						.align(Alignment.End)
+						.padding(top = 8.dp),
+					text = getTimeRanks()[count],
+					style = MaterialTheme.typography.subtitle2,
+					maxLines = 1,
+					overflow = TextOverflow.Ellipsis
+				)
+			}
 		}
 	}
 }

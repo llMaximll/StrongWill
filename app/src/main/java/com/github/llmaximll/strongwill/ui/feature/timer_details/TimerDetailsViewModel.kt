@@ -41,6 +41,4 @@ class TimerDetailsViewModel @Inject constructor(
 			}
 		}
 	}
-
-
 }

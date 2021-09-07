@@ -22,11 +22,13 @@ class TimerEditViewModel @Inject constructor(
                 ?: throw IllegalStateException("Не найден timerId.")
             val timer: Timer = repository.getTimer(timerId)
             setState { copy(timer = timer) }
+
+            updateNameTimers()
         }
     }
 
     override fun setInitialState(): TimerEditContract.State =
-        TimerEditContract.State(timer = Timer())
+        TimerEditContract.State(timer = null)
 
     override fun handleEvents(event: TimerEditContract.Event) {
         when (event) {
@@ -42,5 +44,16 @@ class TimerEditViewModel @Inject constructor(
 
     private fun saveTimer(timer: Timer) {
         viewModelScope.launch { repository.updateTimer(timer = timer) }
+    }
+
+    private fun updateNameTimers() {
+        viewModelScope.launch { getNameTimers() }
+    }
+
+    private suspend fun getNameTimers() {
+        val nameTimers = repository.getNameTimers()
+        setState {
+            copy(nameTimers = nameTimers)
+        }
     }
 }

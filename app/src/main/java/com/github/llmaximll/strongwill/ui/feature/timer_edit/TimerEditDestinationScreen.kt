@@ -28,11 +28,22 @@ fun TimerEditDestinationScreen(
     onEventSent: (event: TimerEditContract.Event) -> Unit,
     onNavigationRequested: (navigationEffect: TimerEditContract.Effect.Navigation) -> Unit
 ) {
-    var nameTimer by rememberSaveable { mutableStateOf(state.timer.name) }
-    var descriptionTimer by rememberSaveable { mutableStateOf(state.timer.description) }
+    // false - nameTimer is not initialized, true - nameTimer is initialized
+    var initValue by rememberSaveable { mutableStateOf(false) }
+
+    var nameTimer by rememberSaveable { mutableStateOf(state.timer?.name ?: "") }
+    var descriptionTimer by rememberSaveable { mutableStateOf(state.timer?.description ?: "") }
+
+    var isErrorName by rememberSaveable { mutableStateOf(false) }
+    var error by rememberSaveable { mutableStateOf("Name") }
+
+    if (!initValue && state.timer != null) {
+        nameTimer = state.timer.name
+        descriptionTimer = state.timer.description
+        initValue = true
+    }
 
     LaunchedEffect(LAUNCH_LISTEN_FOR_EFFECTS) {
-
         effectFlow?.onEach { effect ->
             when (effect) {
                 is TimerEditContract.Effect.Navigation.ToTimers -> onNavigationRequested(
@@ -59,8 +70,9 @@ fun TimerEditDestinationScreen(
                 .verticalScroll(state = scrollState)
         ) {
             CurrentTextField(
-                label = "Name",
+                label = error,
                 text = nameTimer,
+                isError = isErrorName,
                 focusManager = focusManager
             ) { text ->
                 nameTimer = text
@@ -76,10 +88,15 @@ fun TimerEditDestinationScreen(
             CurrentButton(
                 text = "Save",
                 onEventSent = {
-                    onEventSent(TimerEditContract.Event.SaveTimer(timer = state.timer.copy(
-                        name = nameTimer,
-                        description = descriptionTimer
-                    )))
+                    if (nameTimer !in state.nameTimers) {
+                        onEventSent(TimerEditContract.Event.SaveTimer(timer = state.timer?.copy(
+                            name = nameTimer,
+                            description = descriptionTimer
+                        ) ?: Timer()))
+                    } else {
+                        isErrorName = true
+                        error = "A timer with this name already exists"
+                    }
                 }
             )
         }

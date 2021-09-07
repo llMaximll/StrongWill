@@ -11,7 +11,7 @@ class TimerEditContract {
         data class SaveTimer(val timer: Timer) : Event()
     }
 
-    data class State(val timer: Timer) : ViewState
+    data class State(val timer: Timer? = null, val nameTimers: List<String> = listOf()) : ViewState
 
     sealed class Effect : ViewSideEffect {
         sealed class Navigation : Effect() {
